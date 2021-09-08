@@ -8,3 +8,5 @@ Lastly you would need to edit the group_vars/my_dg/vault.yml file with the appro
 
 To run a playbook with ansible vault use the following command
   #ansible-playbook <playbook>.yml --ask-vault-pass
+  
+ Review K64450989 on how to create approprite files for ansible vault
