@@ -1,0 +1,25 @@
+---
+- name: Check device provisioning
+  #/////////////////////////////////////////////////////////////////
+  #Created by S. Tariq Ali
+  #Created on 20210319
+  #Modified on 20210322
+  #This playbook will collect device_provisioning information
+  #/////////////////////////////////////////////////////////////////
+  hosts: my_dg
+  gather_facts: no
+  connection: local
+    
+  tasks:    
+    - name: Task 1 - List of Provisioned Modules - list sys provision
+      bigip_command:
+        commands:
+          - tmsh list sys provision
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      register: output
+    - debug: var=output.stdout_lines

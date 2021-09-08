@@ -1,0 +1,57 @@
+---
+- name: Run PreMig Script
+  #/////////////////////////////////////////////////////////////////
+  #Created by S. Tariq Ali
+  #Created on 20210323
+  #Modified on 20210331
+  #This script will perform  following tasks
+  #Copy a script to a remote device
+  #Take ucs, qkview and capture vip pool status
+  #Copy following files to a local device
+  #qkview, ucs and device_facts
+  #20210331 - modified backup path to /mnt/e/backupsH
+  #/////////////////////////////////////////////////////////////////
+  hosts: my_dg
+
+  gather_facts: false
+  remote_user: root
+
+  tasks:
+    - name: Task1 - Copy post_mig script to the remote device
+      copy: 
+        src=scripts/post_mig.sh 
+        dest=/var/tmp/
+
+    - name: Task2 - Execute the script
+      command: sh /var/tmp/post_mig.sh
+      register: output
+
+    - debug:
+        var: output.stdout_lines
+
+    - name: Task3 - Capture hostname as a variable
+      shell: echo $HOSTNAME
+      register: result
+
+    - debug:
+        var: result
+
+
+    - name: Task4 - Fetch directories from the remote device
+      fetch:
+        src: /var/tmp/{{ result['stdout'] }}-POST_Migration/{{ result['stdout'] }}.{{  item  }}
+        dest: /mnt/e/backupsH/{{ result['stdout'] }}-POST_Migration/
+        flat: true
+      register: fetch_output
+      loop:
+        - qkview
+        - ucs
+        - TMSH_Output
+
+    - debug: var=fetch_output
+
+    - name: Task5 - Remove post_mig script from the remote device
+      file: 
+        path: /var/tmp/post_mig.sh
+        state: absent
+

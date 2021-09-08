@@ -1,0 +1,541 @@
+---
+- name: Checking Compliance and Validating BIG-IP Configuration
+  #/////////////////////////////////////////////////////////////////
+  #Created by S. Tariq Ali
+  #Created on 20210323
+  #Modified on 20210331
+  #This playbook can be leverged to collect device_facts
+  #/////////////////////////////////////////////////////////////////
+  hosts: my_dg
+  gather_facts: no
+  connection: local
+
+#  vars_prompt:
+#    - name: "username"
+#      prompt: "Please enter BIG-IP username"
+#      private: yes
+#    - name: "password"
+#      prompt: "Please enter BIG-IP password"
+#      private: yes
+#
+
+  tasks:
+    - name: Task 1 - Using the bigip_facts module for collecting BIG-IP systeminformation
+      bigip_device_facts:
+        gather_subset:
+          - devices
+          - interfaces
+          - trunks
+          - vlans
+          - traffic-groups
+          - self-ips
+          - system-info
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      register: output
+
+    - debug: var=output
+
+  #  - name: Print some debug information
+  #    vars:
+  #      msg:
+  #          Hostname: "{{ output.devices[0].full_path }}"
+  #          Software Version: "{{ output.devices[0].software_version }}"
+  #          Hotfix: "{{ output.devices[0].edition }}"
+  #          Build: "{{ output.devices[0].build  }}"
+  #          Failover State: "{{ output.devices[0].failover_state  }}"
+  #          Timezonee: "{{ output.devices[0].timezone  }}"
+  #          Management Address: "{{ output.devices[0].management_address  }}"
+  #          Config Sync Address: "{{ output.devices[0].configsync_address  }}"
+  #          Primary Mirror Address: "{{ output.devices[0].primary_mirror_address  }}"
+  #          Secondary Mirror Address: "{{ output.devices[0].secondary_mirror_address  }}"
+  #          Unicast Address: "{{ output.devices[0].unicast_addresses[0].ip  }}"
+  #          Unicast Port: "{{ output.devices[0].unicast_addresses[0].port  }}"
+  #          Chassis Serial: "{{ output.system_info.chassis_serial  }}"
+  #          Hardware: "{{ output.devices[0].marketing_name }}"
+  #          Platform: "{{ output.system_info.platform   }}"
+  #          Uptime: "{{ output.system_info.uptime  }}"
+#
+  #          #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  #          #XXXXX -- Interface Info --XXXXX
+  #          #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  #          Interfaces: "{{ output.interfaces[0].name  }}"
+  #          Speed: "{{ output.interfaces[0].name  }}"
+  #          Media SFP: "{{ output.interfaces[0].media_sfp  }}"
+  #          MTU: "{{ output.interfaces[0].mtu  }}"
+#
+  #          Interfaces: "{{ output.interfaces[1].name  }}"
+  #          Speed: "{{ output.interfaces[1].name  }}"
+  #          Media SFP: "{{ output.interfaces[1].media_sfp  }}"
+  #          MTU: "{{ output.interfaces[1].mtu  }}"
+#
+  #          Interfaces: "{{ output.interfaces[2].name  }}"
+  #          Speed: "{{ output.interfaces[2].name  }}"
+  #          Media SFP: "{{ output.interfaces[2].media_sfp  }}"
+  #          MTU: "{{ output.interfaces[2].mtu  }}"
+#
+  #          Interfaces: "{{ output.interfaces[3].name  }}"
+  #          Speed: "{{ output.interfaces[3].name  }}"
+  #          Media SFP: "{{ output.interfaces[3].media_sfp  }}"
+  #          MTU: "{{ output.interfaces[3].mtu  }}"
+#
+  #          #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  #          #XXXXX -- VLAN Info --XXXXX
+  #          #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  #          VLAN Name: "{{ output.vlans[0].full_path  }}"
+  #          FailSafe Action: "{{ output.vlans[0].failsafe_action  }}"
+  #          Failsafe Settings: "{{ output.vlans[0].failsafe_enabled  }}"
+  #          Interface: "{{ output.vlans[0].interfaces[0].name  }}"
+#
+#
+  #          VLAN Name: "{{ output.vlans[1].full_path  }}"
+  #          FailSafe Action: "{{ output.vlans[1].failsafe_action  }}"
+  #          Failsafe Settings: "{{ output.vlans[1].failsafe_enabled  }}"
+  #          Interface: "{{ output.vlans[1].interfaces[0].name  }}"
+  #          
+  #          #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  #          #XXXXX -- Trunk Info --XXXXX
+  #          #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  #          Trunk Name: "{{ output.trunks[0].name  }}"
+  #          Trunk Configured Member Count: "{{ output.trunks[0].configured_member_count  }}"
+  #          Trunk Operational Member Count: "{{ output.trunks[0].operational_member_count  }}"
+  #          Media Speed: "{{ output.trunks[0].media_speed  }}"
+#
+#
+  #          #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  #          #XXXXX -- Traffic Group --XXXXX
+  #          #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  #          Name : "{{ output.traffic_groups[0].name  }}"
+  #          Floating : "{{ output.traffic_groups[0].is_floating  }}"
+#
+  #          Name : "{{ output.traffic_groups[1].name  }}"
+  #          Floating : "{{ output.traffic_groups[1].is_floating  }}"
+#
+#
+  #          #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  #          #XXXXX -- SeflIP-Info --XXXXX
+  #          #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  #          Name: "{{ output.self_ips[0].name  }}"
+  #          Self IP: "{{ output.self_ips[0].address  }}"
+  #          Netmask: "{{ output.self_ips[0].netmask  }}"
+  #          Allow Access List: "{{ output.self_ips[0].allow_access_list  }}"
+  #          Floating: "{{ output.self_ips[0].floating  }}"
+  #          VLAN: "{{ output.self_ips[0].vlan  }}"
+#
+  #          Name: "{{ output.self_ips[1].name  }}"
+  #          Self IP: "{{ output.self_ips[1].address  }}"
+  #          Netmask: "{{ output.self_ips[1].netmask  }}"
+  #          Allow Access List: "{{ output.self_ips[1].allow_access_list  }}"
+  #          Floating: "{{ output.self_ips[1].floating  }}"
+  #          VLAN: "{{ output.self_ips[1].vlan  }}"
+#
+  #          Name: "{{ output.self_ips[2].name  }}"
+  #          Self IP: "{{ output.self_ips[2].address  }}"
+  #          Netmask: "{{ output.self_ips[2].netmask  }}"
+  #          Allow Access List: "{{ output.self_ips[2].allow_access_list  }}"
+  #          Floating: "{{ output.self_ips[2].floating  }}"
+  #          VLAN: "{{ output.self_ips[2].vlan  }}"
+#
+  #          Name: "{{ output.self_ips[3].name  }}"
+  #          Self IP: "{{ output.self_ips[3].address  }}"
+  #          Netmask: "{{ output.self_ips[3].netmask  }}"
+  #          Allow Access List: "{{ output.self_ips[3].allow_access_list  }}"
+  #          Floating: "{{ output.self_ips[3].floating  }}"
+  #          VLAN: "{{ output.self_ips[3].vlan  }}"
+#
+#
+  #  - debug:
+  #      msg: "{{ msg.split ('\n')  }}"
+
+
+
+
+    - name: Task 2 - BIGIP Commands - list cm trust-domain one-line
+      bigip_command:
+        commands:
+          - tmsh list cm trust-domain one-line
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      register: output
+
+    - debug: var=output.stdout_lines
+
+
+    - name: Task 3 - BIGIP Commands - show cm device-group
+      bigip_command:
+        commands:
+          - tmsh show cm device-group
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      register: output
+
+
+    - debug: var=output.stdout_lines
+
+
+    - name: Task 4 - BIGIP Commands - show cm sync-status 
+      bigip_command:
+        commands:
+          - tmsh show cm sync-status 
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      register: output
+
+
+    - debug: var=output.stdout_lines
+
+
+    - name: Task 5 - BIGIP Commands - list net route default one-line
+      bigip_command:
+        commands:
+          - tmsh list net route default one-line
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      register: output
+
+
+    - debug: var=output.stdout_lines
+
+
+    - name: Task 6 - BIGIP Commands - list net route one-line 
+      bigip_command:
+        commands:
+          - tmsh list net route one-line
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      register: output
+
+    - debug: var=output.stdout_lines
+
+
+    - name: Task 7 - BIGIP Commands - list sys management-route one-line 
+      bigip_command:
+        commands:
+          - tmsh list sys management-route one-line 
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      register: output
+
+    - debug: var=output.stdout_lines
+
+
+    - name: Task 8 - BIGIP Commands - list net stp-globals one-line 
+      bigip_command:
+        commands:
+          - tmsh list net stp-globals one-line
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      register: output
+
+    - debug: var=output.stdout_lines
+
+
+    - name: Task 9 - BIGIP Commands - list sys ntp one-line
+      bigip_command:
+        commands:
+          - tmsh list sys ntp one-line
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      register: output
+
+    - debug: var=output.stdout_lines
+
+
+    - name: Task 10 - BIGIP Commands - list sys httpd auth-pam-idle-timeout
+      bigip_command:
+        commands:
+          - tmsh list sys httpd auth-pam-idle-timeout
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      register: output
+
+    - debug: var=output.stdout_lines
+
+
+    - name: Task 11 - BIGIP Commands - list sys global-settings console-inactivity-timeout
+      bigip_command:
+        commands:
+          - tmsh list sys global-settings console-inactivity-timeout
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      register: output
+
+    - debug: var=output.stdout_lines
+
+    - name: Task 12 - BIGIP Commands - list sys sshd banner-text
+      bigip_command:
+        commands:
+          - tmsh list sys sshd banner-text
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      register: output
+
+    - debug: var=output.stdout_lines
+
+
+    - name: Task 13 - BIGIP Commands - list sys sshd banner
+      bigip_command:
+        commands:
+          - tmsh list sys sshd banner
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      register: output
+
+
+    - name: Task 14 - Verify TCP Profile - tcp_wan_optimized
+      bigip_command:
+        commands:
+          - tmsh list ltm profile tcp tcp_wan_optimized
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      register: output
+    - debug: var=output.stdout_lines
+
+
+
+    - name: Task 15 - Verify TCP Profile - tcp_lan_optimized
+      bigip_command:
+        commands:
+          - tmsh list ltm profile tcp tcp_lan_optimized
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      register: output
+    - debug: var=output.stdout_lines
+
+
+    - name: Task 16 - Verify TCP Profile - http_wan_optimized
+      bigip_command:
+        commands:
+          - tmsh list ltm profile http http_wan_optimized
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      register: output
+    - debug: var=output.stdout_lines
+
+
+    - name: Task 17 - Verify One-Connect Profile - one-connect oneconnect
+      bigip_command:
+        commands:
+          - tmsh list ltm profile one-connect oneconnect
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      register: output
+    - debug: var=output.stdout_lines
+
+
+    - name: Task 18 - Verify HTTP Profile - http http_wan_optimized_xforward
+      bigip_command:
+        commands:
+          - tmsh list ltm profile http http_wan_optimized_xforward
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      register: output
+    - debug: var=output.stdout_lines
+
+
+
+    - name: Task 19 - Verify HTTP Profile - http http_wan_optimized_rewrite_redirect_xforward
+      bigip_command:
+        commands:
+          - tmsh list ltm profile http http_wan_optimized_rewrite_redirect_xforward
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      register: output
+    - debug: var=output.stdout_lines
+
+
+    - name: Task 20 - Verify HTTP Profile - http http_wan_optimized_rewrite_redirect
+      bigip_command:
+        commands:
+          - tmsh list ltm profile http http_wan_optimized_rewrite_redirect
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      register: output
+    - debug: var=output.stdout_lines
+
+
+    - name: Task 21 - Verify HTTP Compression Profile - http-compression http_wan_compression
+      bigip_command:
+        commands:
+          - tmsh list ltm profile http-compression http_wan_compression
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      register: output
+    - debug: var=output.stdout_lines
+
+
+    - name: Task 22 - Verify FastL4 Profile - fastl4 fast_layer4_loose_inbound
+      bigip_command:
+        commands:
+          - tmsh list ltm profile fastl4 fast_layer4_loose_inbound
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      register: output
+    - debug: var=output.stdout_lines
+
+    - name: Task 23 - Verify FastL4 Profile - fastl4 fast_layer4_loose_outbound
+      bigip_command:
+        commands:
+          - tmsh list ltm profile fastl4 fast_layer4_loose_outbound
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      register: output
+    - debug: var=output.stdout_lines
+
+
+    - name: Task 24 - Verify DB Records Per Screen - system.preferences.recordsperscreen value
+      bigip_command:
+        commands:
+          - tmsh list sys db ui.system.preferences.recordsperscreen value
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      register: output
+    - debug: var=output.stdout_lines
+
+
+
+    - name: Task 25 - Verify DB for Advance Selection - system.preferences.recordsperscreen value
+      bigip_command:
+        commands:
+          - tmsh list sys db ui.system.preferences.advancedselection value
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      register: output
+    - debug: var=output.stdout_lines
+
+
+    - name: Task 26 - Verify DB for Start Screen - system.preferences.recordsperscreen value
+      bigip_command:
+        commands:
+          - tmsh list sys db ui.system.preferences.startscreen value
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      register: output
+    - debug: var=output.stdout_lines
+
+
+    - name: Task 27 - List of Provisioned Modules - list sys provision
+      bigip_command:
+        commands:
+          - tmsh list sys provision
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      register: output
+    - debug: var=output.stdout_lines
+
+
+#    - name: Task 28 - Check Status of ntpq -np
+#      command: ntpq -np
+#      register: output
+#
+#    - debug: var=output
+
+

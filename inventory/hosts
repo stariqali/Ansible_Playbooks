@@ -1,0 +1,16 @@
+[all:vars]
+ansible_user=root
+dest_files=/var/tmp/backups
+warn=no
+
+[my_dg:children]
+legacy1
+legacy2
+
+[legacy1]
+10.x.x.x
+10.x.x.x
+
+[legacy2]
+ansible_host=10.x.x.x private_ip=10.x.x.x
+ansible_host=10.x.x.x private_ip=10.x.x.x

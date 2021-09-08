@@ -1,0 +1,59 @@
+---
+- name: Take UCS and Qkview and import files to a local /var/tmp directory
+  #/////////////////////////////////////////////////////////////////
+  #Created by S. Tariq Ali
+  #Created on 20210322
+  #Modified on 20210322
+  #Make sure the local /var/tmp directory exists
+  #Reviewed 20210224
+  #/////////////////////////////////////////////////////////////////
+  hosts: my_dg
+  connection: local
+  gather_facts: false
+
+  tasks:
+
+    - name: Task1 - Set archive name postfix data/time
+      local_action: command date +%Y%m%d-%H%M
+      #local_action: command date +%Y%m%d-%H%M%Z
+      run_once: true
+      register: date
+
+    - name: Task2 - Create UCS archive
+      bigip_command:
+        commands:
+          - save sys ucs {{ private_ip }}-{{ date['stdout'] }}
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      #delegate_to: localhost
+
+    - name: Task3 - Fetch UCS archive
+      bigip_ucs_fetch:
+        src: "{{ private_ip }}-{{ date['stdout'] }}.ucs"
+        dest: "/var/tmp/{{ private_ip }}-{{ date['stdout'] }}.ucs"
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      delegate_to: localhost
+
+    - name: Task4 - Fetch a qkview from the remote device
+      bigip_qkview:
+        asm_request_log: no
+        exclude:
+          - audit
+          - secure
+        dest: /var/tmp/{{ private_ip }}-{{ date['stdout'] }}.qkview
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      delegate_to: localhost

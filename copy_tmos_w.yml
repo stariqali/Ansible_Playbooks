@@ -1,0 +1,26 @@
+---
+- name: Copy TMOS Files To The Remote Devices
+  #/////////////////////////////////////////////////////////////////
+  #Created by S. Tariq Ali
+  #Created on 20210322
+  #Modified on 20210322
+  #This script will perform  following tasks
+  #Copy TMOS Files To The Remote Devices
+  #to SCP file to specific devices
+  #/////////////////////////////////////////////////////////////////
+  hosts: my_dg
+
+  gather_facts: false
+  remote_user: root
+
+
+  tasks:
+    - name: Task1 - Copy TMOS files to the remote device
+      copy: 
+        src: TMOSCode/{{ item }}
+        dest: /shared/images/
+      with_items:
+        - BIGIP-15.1.2.1-0.0.10.iso
+        - BIGIP-15.1.2.1-0.0.10.iso.md5
+        - Hotfix-BIGIP-15.1.2.1.0.100.10-ENG.iso
+        - Hotfix-BIGIP-15.1.2.1.0.100.10-ENG.iso.md5

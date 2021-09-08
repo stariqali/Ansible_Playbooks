@@ -1,0 +1,55 @@
+---
+- name: Install Code on the remote device
+  #/////////////////////////////////////////////////////////////////
+  #Created by S. Tariq Ali
+  #Created on 20210426
+  #Run TMSH commands
+  #/////////////////////////////////////////////////////////////////
+  hosts: my_dg
+  connection: local
+  gather_facts: false
+  vars:
+    provider:
+      server: "{{private_ip}}"
+      user: "{{ansible_user}}"
+      password: "{{ansible_ssh_pass}}"
+      #server_port: 8443 #For AWS
+      server_port: 443 #For AWS
+      validate_certs: false
+
+  tasks:
+#    - name:  Task1 - Show Software Status
+#      bigip_command:
+#        commands:
+#          - show sys software status
+#        provider:
+#          server: "{{private_ip}}"
+#          user: "{{ansible_user}}"
+#          password: "{{ansible_ssh_pass}}"
+#          server_port: 443
+#          validate_certs: false
+#      register: software_status
+#
+#    - name:  Task2 - Display Software Status
+#      debug:
+#        var: software_status
+
+    - name:  Task3 - Show Hardware
+      bigip_command:
+        commands:
+          - show sys hardware
+        provider:
+          server: "{{private_ip}}"
+          user: "{{ansible_user}}"
+          password: "{{ansible_ssh_pass}}"
+          server_port: 443
+          validate_certs: false
+      register: hardware_status
+
+    - name:  Task4 - Display hardware status
+      debug:
+        var: hardware_status
+
+
+
+
