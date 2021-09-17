@@ -9,6 +9,6 @@ Also, edit the group_vars/my_dg/vault.yml file with the appropriate credentials
   #ansible-vault encrypt group_vars/my_dg/vault.yml
 
 To run a playbook with ansible vault use the following command
-  #ansible-playbook <playbook>.yml --ask-vault-pass
+  #ansible-playbook myplaybook.yml --ask-vault-pass
   
 Review K64450989 for more information on F5 BIGIP and Ansible vault configuration
